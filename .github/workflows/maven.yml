@@ -18,7 +18,7 @@ on:
       logLevel:
         description: 'Log level'
         required: true
-        default: 'Debug'
+        default: 'debug'
         type: choice
         options:
         - info
