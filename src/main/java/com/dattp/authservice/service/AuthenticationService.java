@@ -3,6 +3,7 @@ package com.dattp.authservice.service;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +19,7 @@ import com.dattp.authservice.repository.UserRepository;
 
 
 @Service
+@Log4j2
 public class AuthenticationService {
     @Value("${jwt.expiration-accesstoken}")
     private long EXPIRATION_ACCESSTOKEN;
@@ -35,6 +37,7 @@ public class AuthenticationService {
     private AuthenticationManager authenticationManager;
 
     public AuthResponseDTO authenticate(AuthRequestDTO authenticationRequest){
+        log.debug("=========> Username = {} login", authenticationRequest.getUsername());
         // xac thuc
         /*  
         tao UsernamePasswordAuthenticationToken, sau do authenticationManager se dua doi tuong cho AuthenticationProvider

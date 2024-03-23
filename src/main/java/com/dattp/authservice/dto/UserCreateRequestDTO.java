@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserRequestDTO {
+public class UserCreateRequestDTO {
     private Long id;
 
     @NotNull(message = "Tên đầy đủ(fullname) không được để trống")
@@ -27,14 +27,6 @@ public class UserRequestDTO {
     @NotEmpty(message = "Mật khẩu(password) không được để trống")
     private String password;
 
-    public UserRequestDTO() {
-    }
-
-    public UserRequestDTO(Long id, String fullname, String username, String mail, String password) {
-        this.id = id;
-        this.fullname = fullname;
-        this.username = username;
-        this.mail = mail;
-        this.password = password;
+    public UserCreateRequestDTO() {
     }
 }

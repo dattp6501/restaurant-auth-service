@@ -14,6 +14,9 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import com.dattp.authservice.dto.UserCreateRequestDTO;
+import com.dattp.authservice.utils.DateUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -41,6 +44,23 @@ public class User implements UserDetails{
     @Column(name = "mail", nullable = false, unique = true)
     private String mail;
 
+    @Column(name = "create_at")
+    private Long createAt;
+
+    @Column(name = "update_at")
+    private Long updateAt;
+
+    @ManyToMany
+    @JoinTable(
+      name = "role_user",
+      joinColumns = @JoinColumn(name="user_id"),
+      inverseJoinColumns = @JoinColumn(name="role_id")
+    )
+    private List<Role> roles;
+
+    public User() {
+    }
+
     public User(Long id, String fullname, String username, String password, String mail, List<Role> roles) {
         this.id = id;
         this.fullname = fullname;
@@ -48,18 +68,19 @@ public class User implements UserDetails{
         this.password = password;
         this.mail = mail;
         this.roles = roles;
+        this.createAt = DateUtils.getCurrentMils();
+        this.updateAt = DateUtils.getCurrentMils();
     }
 
-    public User() {
+    public User(UserCreateRequestDTO userReq) {
+        copyProperties(userReq);
     }
 
-    @ManyToMany
-    @JoinTable(
-        name = "role_user",
-        joinColumns = @JoinColumn(name="user_id"),
-        inverseJoinColumns = @JoinColumn(name="role_id")
-    )
-    private List<Role> roles;
+    public void copyProperties(UserCreateRequestDTO userReq){
+        BeanUtils.copyProperties(userReq, this);
+        this.createAt = DateUtils.getCurrentMils();
+        this.updateAt = DateUtils.getCurrentMils();
+    }
 
 
     @Override

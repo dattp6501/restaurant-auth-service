@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import com.dattp.authservice.utils.DateUtils;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -23,15 +24,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Role {
-    public Role(Long id, String name, boolean isEnable) {
-        this.id = id;
-        this.name = name.toUpperCase();
-        this.isEnable = isEnable;
-    }
-
-    public Role() {
-    }
-
     @Column(name = "id") @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,11 +35,28 @@ public class Role {
     private boolean isEnable;
 
     @ManyToMany(
-        mappedBy = "roles"
+      mappedBy = "roles"
     )
     @Fetch(value = FetchMode.SELECT)
     @JsonIgnore
     private List<User> users;
+
+    @Column(name = "create_at")
+    private Long createAt;
+
+    @Column(name = "update_at")
+    private Long updateAt;
+
+    public Role() {
+    }
+
+    public Role(Long id, String name, boolean isEnable) {
+        this.id = id;
+        this.name = name.toUpperCase();
+        this.isEnable = isEnable;
+        this.createAt = DateUtils.getCurrentMils();
+        this.updateAt = DateUtils.getCurrentMils();
+    }
 
     @Override
     public String toString() {

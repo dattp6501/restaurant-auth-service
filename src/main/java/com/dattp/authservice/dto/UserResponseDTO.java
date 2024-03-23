@@ -1,7 +1,13 @@
 package com.dattp.authservice.dto;
 
+import com.dattp.authservice.entity.User;
+import com.dattp.authservice.utils.DateUtils;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.BeanUtils;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -11,13 +17,22 @@ public class UserResponseDTO {
     private String username;
     private String mail;
 
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    private LocalDateTime createAt;
+
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    private LocalDateTime updateAt;
+
     public UserResponseDTO() {
     }
 
-    public UserResponseDTO(Long id, String fullname, String username, String mail) {
-        this.id = id;
-        this.fullname = fullname;
-        this.username = username;
-        this.mail = mail;
+    public UserResponseDTO(User user) {
+        copyProperties(user);
+    }
+
+    public void copyProperties(User user) {
+        BeanUtils.copyProperties(user, this);
+        this.createAt = DateUtils.convertToLocalDateTime(user.getCreateAt());
+        this.updateAt = DateUtils.convertToLocalDateTime(user.getUpdateAt());
     }
 }
