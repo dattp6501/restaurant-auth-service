@@ -1,5 +1,6 @@
-package com.dattp.authservice.config;
+package com.dattp.authservice.config.security;
 
+import com.dattp.authservice.config.security.JWTAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,6 +41,7 @@ public class SecurityConfig{
                 // .antMatchers("/**").permitAll()
                 .antMatchers("/h2-console/**").hasAuthority("ROLE_ADMIN")
                 .antMatchers("/api/user/login").permitAll()
+                .antMatchers("/api/user/refresh_token").permitAll()
                 .antMatchers("/api/user/register").permitAll()
                 .anyRequest().authenticated()
                 .and()

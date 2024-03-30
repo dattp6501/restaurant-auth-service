@@ -15,7 +15,7 @@ public interface RoleRepository extends JpaRepository<Role,Long>{
 
 
     @Query(
-        value = "SELECT r.id AS id, r.name AS name, r.is_enable AS is_enable "
+        value = "SELECT r.id AS id, r.name AS name, r.is_enable AS is_enable, r.create_at AS create_at, r.update_at AS update_at "
         +"FROM users u "
         +"INNER JOIN role_user ru ON u.id=ru.user_id "
         +"INNER JOIN role r ON r.id=ru.role_id "

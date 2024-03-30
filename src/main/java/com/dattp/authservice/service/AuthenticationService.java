@@ -1,11 +1,15 @@
 package com.dattp.authservice.service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import com.dattp.authservice.dto.RefreshTokenDTO;
+import com.dattp.authservice.exception.BadRequestException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,30 +18,16 @@ import org.springframework.stereotype.Service;
 import com.dattp.authservice.dto.AuthRequestDTO;
 import com.dattp.authservice.dto.AuthResponseDTO;
 import com.dattp.authservice.entity.User;
-import com.dattp.authservice.repository.RoleRepository;
-import com.dattp.authservice.repository.UserRepository;
 
 
 @Service
 @Log4j2
-public class AuthenticationService {
-    @Value("${jwt.expiration-accesstoken}")
-    private long EXPIRATION_ACCESSTOKEN;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private RoleRepository roleRepository;
-
-    @Autowired
-    private JWTService jwtService;
-
+public class AuthenticationService extends com.dattp.authservice.service.Service {
     @Autowired
     private AuthenticationManager authenticationManager;
 
     public AuthResponseDTO authenticate(AuthRequestDTO authenticationRequest){
-        log.debug("=========> Username = {} login", authenticationRequest.getUsername());
+        log.debug("=========> AuthenticationService::authenticate::{}", authenticationRequest.getUsername());
         // xac thuc
         /*  
         tao UsernamePasswordAuthenticationToken, sau do authenticationManager se dua doi tuong cho AuthenticationProvider
@@ -49,10 +39,8 @@ public class AuthenticationService {
             new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
         );
         // xac thuc thanh cong
-        User user = userRepository.findByUsername(authenticationRequest.getUsername()).orElseThrow();//kiem tra user
-        if(user!=null){
-            user.setRoles(roleRepository.getRoles(user.getUsername()));//lay role
-        }
+        User user = userStorage.findByUsernameFromDB(authenticationRequest.getUsername());//kiem tra user
+        user.setRoles(roleStorage.getRolesFromDB(user.getUsername()));//lay role
         // tao danh sach role de spring boot quan ly
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         user.getRoles().forEach(i->authorities.add(
@@ -60,6 +48,37 @@ public class AuthenticationService {
         ));
         String jwtAccessToken = jwtService.generateAccessToken(user, authorities);
         String jwtRefreshToken = jwtService.generateRefreshToken(user, authorities);
-        return new AuthResponseDTO(jwtAccessToken, jwtRefreshToken, EXPIRATION_ACCESSTOKEN);
+        AuthResponseDTO resp = new AuthResponseDTO(jwtAccessToken, jwtRefreshToken, jwtService.getExpirationAccessKey());
+        tokenStorage.saveToCache(user.getId(), resp);
+        return resp;
+    }
+
+    public AuthResponseDTO refreshToken(RefreshTokenDTO dto){
+        AuthResponseDTO tokenOld = tokenStorage.get(dto.getUserId());
+        if(!tokenOld.getRefreshToken().equals(dto.getRefreshToken())) throw new BadRequestException("Token invalid");
+
+        Map<String, Object> detail = jwtService.getInfoRefreshToken(dto.getRefreshToken());
+        // xac thuc thanh cong
+        String username = (String) detail.get("username");
+        User user = userStorage.findByUsernameFromDB(username);//kiem tra user
+        user.setRoles(roleStorage.getRolesFromDB(user.getUsername()));//lay role
+        // tao danh sach role de spring boot quan ly
+        Collection<SimpleGrantedAuthority> authorities = user.getRoles().stream()
+          .map(e->new SimpleGrantedAuthority(e.getName()))
+          .collect(Collectors.toList());
+        String jwtAccessToken = jwtService.generateAccessToken(user, authorities);
+        String jwtRefreshToken = jwtService.generateRefreshToken(user, authorities);
+        AuthResponseDTO resp = new AuthResponseDTO(jwtAccessToken, jwtRefreshToken, jwtService.getExpirationAccessKey());
+        tokenStorage.saveToCache(user.getId(), resp);
+        return resp;
+    }
+
+    public Map<String, Object> verify(String accessToken) throws AccessDeniedException {
+        Map<String, Object> detail = jwtService.getDetail(accessToken);
+
+        AuthResponseDTO tokenOld = tokenStorage.get((Long) detail.get("id"));
+        if(!tokenOld.getAccessToken().equals(accessToken)) throw new AccessDeniedException("Access Denied");
+
+        return detail;
     }
 }

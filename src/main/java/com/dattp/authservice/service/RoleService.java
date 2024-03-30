@@ -14,15 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RoleService extends com.dattp.authservice.service.Service {
-    @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRED)
     public Role saveRole(Role role){
-        return roleRepository.save(role);
+        return roleStorage.save(role);
     }
 
     public Role getByID(Long id){
-        return roleRepository.findById(id).orElse(null);
+        return roleStorage.findById(id);
     }
     public List<Role> getRoles(User user){
-        return roleRepository.getRoles(user.getUsername());
+        return roleStorage.getRoles(user.getUsername());
     }
 }

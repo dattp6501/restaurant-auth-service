@@ -2,6 +2,7 @@ package com.dattp.authservice.controller;
 
 import javax.validation.Valid;
 
+import com.dattp.authservice.dto.RefreshTokenDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,13 @@ public class UserController extends Controller{
     public ResponseEntity<ResponseDTO> login(@RequestBody @Valid AuthRequestDTO authenticationRequest){
         return ResponseEntity.ok().body(
             new ResponseDTO(HttpStatus.OK.value(), "Thành công", authenticationService.authenticate(authenticationRequest))
+        );
+    }
+
+    @PostMapping("/refresh_token")
+    public ResponseEntity<ResponseDTO> refreshToken(@RequestBody @Valid RefreshTokenDTO dto){
+        return ResponseEntity.ok().body(
+          new ResponseDTO(HttpStatus.OK.value(), "Thành công", authenticationService.refreshToken(dto))
         );
     }
 

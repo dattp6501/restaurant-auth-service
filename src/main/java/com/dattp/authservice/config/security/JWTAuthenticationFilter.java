@@ -1,8 +1,7 @@
-package com.dattp.authservice.config;
+package com.dattp.authservice.config.security;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.servlet.FilterChain;
@@ -10,49 +9,40 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.dattp.authservice.service.AuthenticationService;
+import com.dattp.authservice.service.JWTService;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
-
 @Component
+@Log4j2
 public class JWTAuthenticationFilter extends OncePerRequestFilter{
-    @Value("${jwt.secret}")
-    private String SECRET_KEY;
+    @Autowired @Lazy private AuthenticationService authenticationService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String accessToken = request.getHeader("access_token");
         if(accessToken==null){
             try {
-                accessToken = Arrays.asList(request.getCookies()).stream()
+                accessToken = Arrays.stream(request.getCookies())
                 .filter(c->c.getName().equals("access_token"))
                 .collect(Collectors.toList()).get(0).getValue();
-            } catch (Exception e) {}//nếu không có access_token thì sẽ vào catch
+            } catch (Exception ignored) {
+            }//nếu không có access_token thì sẽ vào catch
         }
         if(accessToken==null){
             filterChain.doFilter(request, response);
             return;
         }
         try {
-            // tao giai thuat giai ma
-            Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY.getBytes());
-            JWTVerifier jwtVerifier = JWT.require(algorithm).build();
-            // giai ma
-            DecodedJWT decodedJWT = jwtVerifier.verify(accessToken);
-            Map<String, Object> detail = new HashMap<>();
-            detail.put("id", decodedJWT.getClaim("id").asLong());
-            detail.put("fullname", decodedJWT.getClaim("fullname").asString());
-            detail.put("username", decodedJWT.getClaim("username").asString());
-            detail.put("email", decodedJWT.getClaim("email").asString());
-            String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
+            Map<String, Object> detail = authenticationService.verify(accessToken);
+            String[] roles = (String[]) detail.get("roles");
             // chuyen ve dang chuan de xu ly
             Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
             Arrays.stream(roles).forEach(role->{
@@ -78,10 +68,10 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter{
             }
             */
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);//lưu lại các thông tin quyền của người dùng hiện tại
-            filterChain.doFilter(request, response);
         } catch (Exception e) {
-            filterChain.doFilter(request, response);
+            log.debug("======> JWTAuthenticationFilter::doFilterInternal::exception::{}", e.getMessage());
         }
+        filterChain.doFilter(request, response);
     }
     
 }

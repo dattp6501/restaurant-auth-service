@@ -44,6 +44,9 @@ public class User implements UserDetails{
     @Column(name = "mail", nullable = false, unique = true)
     private String mail;
 
+    @Column(name = "avatar")
+    private String avatar;
+
     @Column(name = "create_at")
     private Long createAt;
 
