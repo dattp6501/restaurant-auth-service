@@ -1,4 +1,4 @@
-//package com.dattp.authservice.config;
+//package com.dattp.authservice.config.kafka;
 //
 //import java.util.HashMap;
 //import java.util.Map;
@@ -19,6 +19,7 @@
 //public class ProducerKafkaConfig {
 //    @Value("${spring.kafka.bootstrap-servers}")
 //    private String bootstrapServer;
+//
 //    //
 //    public Map<String, Object> producerConfigJSON(){
 //        Map<String,Object> props = new HashMap<>();

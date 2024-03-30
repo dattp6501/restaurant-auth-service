@@ -5,6 +5,7 @@ import com.dattp.authservice.storage.TokenStorage;
 import com.dattp.authservice.storage.UserStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+//import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @org.springframework.stereotype.Service
@@ -15,4 +16,7 @@ public class Service {
   @Autowired @Lazy protected UserStorage userStorage;
   @Autowired @Lazy protected RoleStorage roleStorage;
   @Autowired @Lazy protected TokenStorage tokenStorage;
+
+//  @Autowired @Lazy protected KafkaTemplate<String, UserResponseDTO> kafkaTemplateUser;
+//  @Autowired @Lazy protected KafkaTemplate<String, String> kafkaTemplateString;
 }
