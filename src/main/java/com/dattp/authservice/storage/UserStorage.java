@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Component
 public class UserStorage extends Storage {
   @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRED)
@@ -29,5 +31,15 @@ public class UserStorage extends Storage {
     User user = userRepository.findByUsername(username).orElseThrow(()->new UserNotFoundException(username));
     Role role = roleRepository.findByName(rolename).orElseThrow(()->new RoleNotFoundException(rolename));
     user.getRoles().add(role);
+  }
+
+
+  public List<Role> getDefaultRoleUser(){
+    return roleRepository.findRolesByNameIn(
+      List.of(
+        "ROLE_PRODUCT_ACCESS",
+        "ROLE_ORDER_NEW", "ROLE_ORDER_ACCESS", "ROLE_ORDER_UPDATE", "ROLE_ORDER_DELETE"
+      )
+    );
   }
 }

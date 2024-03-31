@@ -33,7 +33,7 @@ public class UserController extends Controller{
     @RequestMapping("/register")
     public ResponseEntity<?> register(@RequestBody @Valid UserCreateRequestDTO userReq){
         return ResponseEntity.ok().body(
-            new ResponseDTO(HttpStatus.OK.value(), "Thành công", userService.saveUser(userReq))
+            new ResponseDTO(HttpStatus.OK.value(), "Thành công", userService.createUser(userReq))
         );
     }
 
