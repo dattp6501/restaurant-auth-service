@@ -1,8 +1,13 @@
 package com.dattp.authservice.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
 @Configuration
 public class ApplicationConfig {
-    
+  @Bean
+  public RestTemplate cRestTemplate(){
+    return new RestTemplate();
+  }
 }

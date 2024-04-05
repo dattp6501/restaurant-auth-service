@@ -38,11 +38,11 @@ public class SecurityConfig{
         http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.cors(cors -> cors.disable());
         http.authorizeHttpRequests(auth -> auth
-                // .antMatchers("/**").permitAll()
                 .antMatchers("/h2-console/**").hasAuthority("ROLE_ADMIN")
                 .antMatchers("/api/user/login").permitAll()
                 .antMatchers("/api/user/refresh_token").permitAll()
                 .antMatchers("/api/user/register").permitAll()
+                .antMatchers("/isRunning").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .authenticationProvider(authenticationProvider())
