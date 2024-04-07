@@ -2,6 +2,7 @@ package com.dattp.authservice.controller;
 
 import javax.validation.Valid;
 
+import com.dattp.authservice.anotation.docapi.AddAuthorizedDocAPI;
 import com.dattp.authservice.dto.RefreshTokenDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +37,7 @@ public class UserController extends Controller{
     }
 
     @GetMapping("/detail")
+    @AddAuthorizedDocAPI
     public ResponseEntity<?> userDetail(){
         return ResponseEntity.ok(userService.getDetail());
     }
