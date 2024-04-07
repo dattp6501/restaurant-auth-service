@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Custom Swagger UI</title>
+    <!-- Chỉnh sửa đường dẫn để phản ánh đường dẫn của ứng dụng của bạn -->
+    <link href="/swagger-ui/swagger-ui.css" rel="stylesheet">
+    <script src="/swagger-ui/swagger-ui-bundle.js"></script>
+    <script src="/swagger-ui/swagger-ui-standalone-preset.js"></script>
+</head>
+<body>
+<div id="swagger-ui"></div>
+<script>
+    window.onload = function() {
+        // Tùy chỉnh đường dẫn để phản ánh đường dẫn của ứng dụng của bạn
+        SwaggerUIBundle({
+            url: "/v2/api-docs",
+            dom_id: '#swagger-ui',
+            deepLinking: true,
+            presets: [
+                SwaggerUIBundle.presets.apis,
+                SwaggerUIStandalonePreset
+            ],
+            plugins: [
+                SwaggerUIBundle.plugins.DownloadUrl
+            ],
+            layout: "StandaloneLayout"
+        })
+    }
+</script>
+</body>
+</html>

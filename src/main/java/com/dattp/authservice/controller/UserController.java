@@ -14,8 +14,7 @@ import com.dattp.authservice.dto.UserCreateRequestDTO;
 @RestController
 @RequestMapping("/api/user")
 public class UserController extends Controller{
-    @PostMapping
-    @RequestMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<ResponseDTO> login(@RequestBody @Valid AuthRequestDTO authenticationRequest){
         return ResponseEntity.ok().body(
             new ResponseDTO(HttpStatus.OK.value(), "Thành công", authenticationService.authenticate(authenticationRequest))
@@ -29,16 +28,14 @@ public class UserController extends Controller{
         );
     }
 
-    @PostMapping
-    @RequestMapping("/register")
+    @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody @Valid UserCreateRequestDTO userReq){
         return ResponseEntity.ok().body(
             new ResponseDTO(HttpStatus.OK.value(), "Thành công", userService.createUser(userReq))
         );
     }
 
-    @GetMapping
-    @RequestMapping("/detail")
+    @GetMapping("/detail")
     public ResponseEntity<?> userDetail(){
         return ResponseEntity.ok(userService.getDetail());
     }

@@ -43,6 +43,7 @@ public class SecurityConfig{
                 .antMatchers("/api/user/refresh_token").permitAll()
                 .antMatchers("/api/user/register").permitAll()
                 .antMatchers("/isRunning").permitAll()
+                .antMatchers("/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .authenticationProvider(authenticationProvider())
