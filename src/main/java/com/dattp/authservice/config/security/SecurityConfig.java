@@ -1,6 +1,5 @@
 package com.dattp.authservice.config.security;
 
-import com.dattp.authservice.config.security.JWTAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +10,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -31,19 +31,25 @@ public class SecurityConfig{
     @Autowired
     private JWTAuthenticationFilter jwtAuthenticationFilter;
 
+    private static final String[] publicPath = {
+      "/api/user/register",
+      "/api/user/login",
+      "/api/user/refresh_token",
+      "/isRunning",
+      "/swagger-resources/**",
+      "/swagger-ui.html",
+      "/v2/api-docs",
+      "/webjars/**",
+      "/swagger-ui/**"
+    };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-        http.csrf(csrf -> csrf.disable());
+        http.csrf(AbstractHttpConfigurer::disable);
         http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        http.cors(cors -> cors.disable());
+        http.cors(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(auth -> auth
-                .antMatchers("/h2-console/**").hasAuthority("ROLE_ADMIN")
-                .antMatchers("/api/user/login").permitAll()
-                .antMatchers("/api/user/refresh_token").permitAll()
-                .antMatchers("/api/user/register").permitAll()
-                .antMatchers("/isRunning").permitAll()
-                .antMatchers("/**").permitAll()
+                .antMatchers(publicPath).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .authenticationProvider(authenticationProvider())
