@@ -15,24 +15,25 @@ import com.dattp.authservice.dto.UserCreateRequestDTO;
 
 @RestController
 @RequestMapping("/api/user")
+@CrossOrigin(origins = "*")
 public class UserController extends Controller{
     @PostMapping(value = "/login", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<ResponseDTO> login(@RequestBody @Valid AuthRequestDTO authenticationRequest){
-        return ResponseEntity.ok().body(
+        return ResponseEntity.ok(
             new ResponseDTO(HttpStatus.OK.value(), "Thành công", authenticationService.authenticate(authenticationRequest))
         );
     }
 
     @PostMapping(value = "/refresh_token", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<ResponseDTO> refreshToken(@RequestBody @Valid RefreshTokenDTO dto){
-        return ResponseEntity.ok().body(
+        return ResponseEntity.ok(
           new ResponseDTO(HttpStatus.OK.value(), "Thành công", authenticationService.refreshToken(dto))
         );
     }
 
     @PostMapping(value = "/register", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> register(@RequestBody @Valid UserCreateRequestDTO userReq){
-        return ResponseEntity.ok().body(
+        return ResponseEntity.ok(
             new ResponseDTO(HttpStatus.OK.value(), "Thành công", userService.createUser(userReq))
         );
     }
