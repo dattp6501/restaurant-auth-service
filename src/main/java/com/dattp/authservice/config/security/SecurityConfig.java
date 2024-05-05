@@ -32,9 +32,7 @@ public class SecurityConfig{
     private JWTAuthenticationFilter jwtAuthenticationFilter;
 
     private static final String[] publicPath = {
-      "/api/user/register",
-      "/api/user/login",
-      "/api/user/refresh_token",
+      "/api/user/*",
       "/isRunning",
       "/swagger-resources/**",
       "/swagger-ui.html",

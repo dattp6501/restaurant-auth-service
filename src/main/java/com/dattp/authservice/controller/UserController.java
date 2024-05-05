@@ -7,6 +7,7 @@ import com.dattp.authservice.dto.RefreshTokenDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.dattp.authservice.dto.AuthRequestDTO;
@@ -32,7 +33,7 @@ public class UserController extends Controller{
     }
 
     @PostMapping(value = "/register", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<?> register(@RequestBody @Valid UserCreateRequestDTO userReq){
+    public ResponseEntity<ResponseDTO> register(@RequestBody @Valid UserCreateRequestDTO userReq){
         return ResponseEntity.ok(
             new ResponseDTO(HttpStatus.OK.value(), "Thành công", userService.createUser(userReq))
         );
@@ -40,7 +41,10 @@ public class UserController extends Controller{
 
     @GetMapping(value = "/detail", produces = {MediaType.APPLICATION_JSON_VALUE})
     @AddAuthorizedDocAPI
-    public ResponseEntity<?> userDetail(){
-        return ResponseEntity.ok(userService.getDetail());
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ResponseDTO> userDetail(){
+        return ResponseEntity.ok(
+            new ResponseDTO(HttpStatus.OK.value(), "Thành công", userService.getDetail())
+        );
     }
 }
