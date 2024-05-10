@@ -32,4 +32,8 @@ public class UserService extends com.dattp.authservice.service.Service {
         User userDb = userStorage.findByIdFromDB(jwtService.getUserId());
       return new UserResponseDTO(userDb);
     }
+
+    public void logout(){
+        tokenStorage.removeCache(jwtService.getUserId());
+    }
 }

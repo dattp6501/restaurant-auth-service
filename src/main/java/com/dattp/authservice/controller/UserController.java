@@ -47,4 +47,14 @@ public class UserController extends Controller{
             new ResponseDTO(HttpStatus.OK.value(), "Thành công", userService.getDetail())
         );
     }
+
+    @GetMapping(value = "/logout", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @AddAuthorizedDocAPI
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ResponseDTO> logout(){
+        userService.logout();
+        return ResponseEntity.ok(
+            new ResponseDTO(HttpStatus.OK.value(), "Thành công", null)
+        );
+    }
 }

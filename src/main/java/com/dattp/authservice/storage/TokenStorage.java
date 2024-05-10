@@ -14,6 +14,10 @@ public class TokenStorage extends Storage{
       redisService.setEntity(RedisKeyConfig.genKeyToken(userId), token, jwtService.getExpirationRefreshKey());
   }
 
+  public void removeCache(Long userId){
+    redisService.delete(RedisKeyConfig.genKeyToken(userId));
+  }
+
   public AuthResponseDTO get(Long userId){
     AuthResponseDTO token = redisService.getEntity(RedisKeyConfig.genKeyToken(userId), AuthResponseDTO.class);
     if(Objects.isNull(token)) throw new BadRequestException("token invalid");
