@@ -48,7 +48,7 @@ public class UserController extends Controller{
         );
     }
 
-    @GetMapping(value = "/logout", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "/logout", produces = {MediaType.APPLICATION_JSON_VALUE})
     @AddAuthorizedDocAPI
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ResponseDTO> logout(){
