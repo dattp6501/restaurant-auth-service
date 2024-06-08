@@ -15,5 +15,7 @@ public class RefreshTokenDTO {
 
   private Long userId;
 
+  private Integer otp;
+
   public RefreshTokenDTO(){}
 }

@@ -57,4 +57,13 @@ public class UserController extends Controller{
             new ResponseDTO(HttpStatus.OK.value(), "Thành công", null)
         );
     }
+
+    @GetMapping(value = "/qrcode", produces = MediaType.IMAGE_PNG_VALUE)
+    @AddAuthorizedDocAPI
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<byte[]> genQRCode() throws Throwable {
+        return ResponseEntity.ok()
+            .contentType(MediaType.IMAGE_PNG)
+            .body(authenticationService.genQRCode(jwtService.getUsername()));
+    }
 }

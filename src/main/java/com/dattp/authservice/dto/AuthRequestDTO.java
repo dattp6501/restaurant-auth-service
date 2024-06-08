@@ -13,6 +13,8 @@ public class AuthRequestDTO {
 
     @NotNull(message = "Mật khẩu(password) không được để trống")
     private String password;
+
+    private Integer otp;
     public AuthRequestDTO() {
     }
     public AuthRequestDTO(String username, String password) {

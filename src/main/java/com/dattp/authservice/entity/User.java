@@ -41,6 +41,9 @@ public class User implements UserDetails{
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "google_authenticator_secret_key", unique = true)
+    private String googleAuthenticatorSecretKey;
+
     @Column(name = "mail", nullable = false, unique = true)
     private String mail;
 
