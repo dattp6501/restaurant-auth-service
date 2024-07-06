@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -54,7 +53,9 @@ public class AuthenticationService extends com.dattp.authservice.service.Service
         // xac thuc thanh cong
         User user = userStorage.findByUsernameFromDB(authenticationRequest.getUsername());//kiem tra user
         //google authenticator
-        validateOTP(user.getGoogleAuthenticatorSecretKey(), authenticationRequest.getOtp());
+        if (user.getIsEnable2Fa().equals(true)) {
+            validateOTP(user.getGoogleAuthenticatorSecretKey(), authenticationRequest.getOtp());
+        }
         //
         user.setRoles(roleStorage.getRolesFromDB(user.getUsername()));//lay role
         // tao danh sach role de spring boot quan ly
@@ -76,7 +77,9 @@ public class AuthenticationService extends com.dattp.authservice.service.Service
         String username = (String) detail.get("username");
         User user = userStorage.findByUsernameFromDB(username);//kiem tra user
         //google authenticator
-        validateOTP(user.getGoogleAuthenticatorSecretKey(), dto.getOtp());
+        if (user.getIsEnable2Fa().equals(true)) {
+            validateOTP(user.getGoogleAuthenticatorSecretKey(), dto.getOtp());
+        }
         //
         user.setRoles(roleStorage.getRolesFromDB(user.getUsername()));//lay role
         // tao danh sach role de spring boot quan ly
@@ -90,7 +93,7 @@ public class AuthenticationService extends com.dattp.authservice.service.Service
 
     public Map<String, Object> verify(String accessToken) throws AccessDeniedException {
         Map<String, Object> detail = jwtService.getDetail(accessToken);
-
+        //kiem tra token tren cache
         AuthResponseDTO tokenOld = tokenStorage.get((Long) detail.get("id"));
         if (!tokenOld.getAccessToken().equals(accessToken)) throw new AccessDeniedException("Access Denied");
 
@@ -101,7 +104,7 @@ public class AuthenticationService extends com.dattp.authservice.service.Service
     @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public byte[] genQRCode(String username) throws Throwable {
         User user = userStorage.findByUsernameFromDB(username);
-        if(Objects.isNull(user.getGoogleAuthenticatorSecretKey())){
+        if (Objects.isNull(user.getGoogleAuthenticatorSecretKey())) {
             user.setGoogleAuthenticatorSecretKey(GoogleAuthenticatorUtils.generateSecret());
             userStorage.saveToDB(user);
         }
