@@ -31,7 +31,7 @@ public class AuthserviceApplication{
 				DateUtils.getcurrentLocalDateTime()
 					.plusHours(7)
 					.format(DateTimeFormatter.ofPattern("HH:mm:ss yyyy-MM-dd"))
-					+": AUTH ===> RUNNING";
+					+": AUTH ===> STARTED";
 			telegramService.sendNotificationMonitorSystem(message);
 		};
 	}
