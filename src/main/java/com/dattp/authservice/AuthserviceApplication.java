@@ -26,7 +26,7 @@ public class AuthserviceApplication{
 	@Bean
 	CommandLineRunner run(GenDataConfig genDataConfig, TelegramService telegramService){
 		return arg0->{
-			genDataConfig.genData();
+//			genDataConfig.genData();
 			String message =
 				DateUtils.getcurrentLocalDateTime()
 					.plusHours(7)

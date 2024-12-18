@@ -53,11 +53,15 @@ public class User implements UserDetails {
 
     @ManyToMany
     @JoinTable(
-        name = "role_user",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id")
+            name = "role_user",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private List<Role> roles;
+
+    public User() {
+        super();
+    }
 
     @PrePersist
     protected void onCreate() {
@@ -70,7 +74,13 @@ public class User implements UserDetails {
         this.updateAt = DateUtils.getCurrentMils();
     }
 
-    public User() {
+    public User(Long id, String fullname, String username, String password, String mail, List<Role> roles) {
+        this.id = id;
+        this.fullname = fullname;
+        this.username = username;
+        this.password = password;
+        this.mail = mail;
+        this.roles = roles;
     }
 
     public User(UserCreateRequestDTO userReq) {
