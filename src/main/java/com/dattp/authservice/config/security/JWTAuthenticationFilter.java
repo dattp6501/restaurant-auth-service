@@ -1,16 +1,6 @@
 package com.dattp.authservice.config.security;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.dattp.authservice.service.AuthenticationService;
-import com.dattp.authservice.service.JWTService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -20,23 +10,36 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @Component
 @Log4j2
-public class JWTAuthenticationFilter extends OncePerRequestFilter{
-    @Autowired @Lazy private AuthenticationService authenticationService;
+public class JWTAuthenticationFilter extends OncePerRequestFilter {
+    @Autowired
+    @Lazy
+    private AuthenticationService authenticationService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String accessToken = request.getHeader("access_token");
-        if(accessToken==null){
+        if (accessToken == null) {
             try {
                 accessToken = Arrays.stream(request.getCookies())
-                .filter(c->c.getName().equals("access_token"))
-                .collect(Collectors.toList()).get(0).getValue();
+                        .filter(c -> c.getName().equals("access_token"))
+                        .collect(Collectors.toList()).get(0).getValue();
             } catch (Exception ignored) {
             }//nếu không có access_token thì sẽ vào catch
         }
-        if(accessToken==null){
+        if (accessToken == null) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -45,11 +48,11 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter{
             String[] roles = (String[]) detail.get("roles");
             // chuyen ve dang chuan de xu ly
             Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-            Arrays.stream(roles).forEach(role->{
+            Arrays.stream(roles).forEach(role -> {
                 authorities.add(new SimpleGrantedAuthority(role));
             });
             // neu nguoi dung hop le thi set thong tin cho security context
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(detail.get("id"),null, authorities);
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(detail.get("id"), null, authorities);
             usernamePasswordAuthenticationToken.setDetails(detail);
             /*
             {
@@ -69,9 +72,9 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter{
             */
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);//lưu lại các thông tin quyền của người dùng hiện tại
         } catch (Exception e) {
-            log.debug("======> JWTAuthenticationFilter::doFilterInternal::exception::{}", e.getMessage());
+            log.error("======> JWTAuthenticationFilter::doFilterInternal::exception::{}", e.getMessage());
         }
         filterChain.doFilter(request, response);
     }
-    
+
 }
