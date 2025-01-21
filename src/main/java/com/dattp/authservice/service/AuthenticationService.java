@@ -94,8 +94,8 @@ public class AuthenticationService extends com.dattp.authservice.service.Service
     public Map<String, Object> verify(String accessToken) throws AccessDeniedException {
         Map<String, Object> detail = jwtService.getDetail(accessToken);
         //kiem tra token tren cache
-        AuthResponseDTO tokenOld = tokenStorage.get((Long) detail.get("id"));
-        if (!tokenOld.getAccessToken().equals(accessToken)) throw new AccessDeniedException("Access Denied");
+//        AuthResponseDTO tokenOld = tokenStorage.get((Long) detail.get("id"));
+//        if (!tokenOld.getAccessToken().equals(accessToken)) throw new AccessDeniedException("Access Denied");
 
         return detail;
     }

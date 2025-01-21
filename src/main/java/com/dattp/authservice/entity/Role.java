@@ -20,7 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "role")
+@Table(name = "role", schema = "auth")
 @Getter
 @Setter
 public class Role {
